@@ -1,4 +1,5 @@
-﻿using Data.Interface;
+﻿using Data.Entities;
+using Data.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,13 @@ namespace Data
 
     public interface IUnitOfWork : IDisposable
     {
+        IProductRepository Products { get; }
+        IAccountRepository Accounts { get; }
+        IOrderRepository Orders { get; }
+        IProductSKURepository ProductSKUs { get; }
+        IUserAddressRepository UserAddress { get; }
+        ICartRepository Carts { get; }
+        IImageRepository Images { get; }
         void CommitTransaction();
         void RollbackTransaction();
         int SaveChanges();

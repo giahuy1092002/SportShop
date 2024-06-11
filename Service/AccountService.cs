@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Data;
+using Data.Entities;
 using Data.Interface;
 using Data.Model;
 using Data.ViewModel;
@@ -14,36 +15,40 @@ namespace Service
 {
     public class AccountService : IAccountService
     {
-        private readonly IAccountRepository _accountRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AccountService(IAccountRepository accountRepository )
+        public AccountService(IUnitOfWork unitOfWork )
         {
-           _accountRepository = accountRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> ChangePassword(ChangePasswordModel changePasswordModel, string email)
         {
-            return await _accountRepository.ChangePassword(changePasswordModel, email); 
+            return await _unitOfWork.Accounts.ChangePassword(changePasswordModel, email); 
         }
 
         public async Task<User> GetCurrentUser(string email)
         {
-            return await _accountRepository.GetCurrentUser(email);
+            return await _unitOfWork.Accounts.GetCurrentUser(email);
         }
 
         public async Task<UserInfoDto> GetUserInfo(Guid userId)
         {
-            return await _accountRepository.GetUserInfo(userId);
+            return await _unitOfWork.Accounts.GetUserInfo(userId);
         }
 
         public async Task<User> SignIn(SignInModel request)
         {
-            return await _accountRepository.SignIn(request);
+            return await _unitOfWork.Accounts.SignIn(request);
         }
 
         public async Task<User> SignUp(SignUpModel request)
         {
-            return await _accountRepository.SignUp(request);
+            return await _unitOfWork.Accounts.SignUp(request);
         }
+        //public async Task<bool> ResetPassword(string email, string password)
+        //{
+        //    return await _accountRepository.ResetPassword(email, password);
+        //}
     }
 }

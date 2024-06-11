@@ -19,5 +19,7 @@ namespace Data.Interface
         Task<UserInfoDto> GetUserInfo(Guid userId);
         Task<User> GetCurrentUser(string email);
         Task<bool> ChangePassword(ChangePasswordModel changePasswordModel,string email);
+        Task<LinkMailModel> ForgetPassword(string email);
+        Task<bool> ResetPassword(ResetPassword request);
     }
 }

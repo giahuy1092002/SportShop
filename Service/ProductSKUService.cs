@@ -1,5 +1,7 @@
-﻿using Data.Entities;
+﻿using Data;
+using Data.Entities;
 using Data.Interface;
+using Data.ViewModel;
 using Service.Interface;
 using System;
 using System.Collections.Generic;
@@ -11,26 +13,32 @@ namespace Service
 {
     public class ProductSKUService : IProductSKUService
     {
-        private readonly IProductSKURepository _productSKURepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ProductSKUService(IProductSKURepository productSKURepository)
+        public ProductSKUService(IUnitOfWork unitOfWork)
         {
-            _productSKURepository = productSKURepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Add(ProductSKU productSKU)
         {
-            await _productSKURepository.Add(productSKU);
+            await _unitOfWork.ProductSKUs.Add(productSKU);
         }
 
         public async Task<List<ProductSKU>> GetByColor(int productId, int colorId)
         {
-            return await _productSKURepository.GetByColor(productId,colorId);
+            return await _unitOfWork.ProductSKUs.GetByColor(productId,colorId);
         }
 
         public async Task<ProductSKU> GetProductSKU(int productSKUId)
         {
-            return await _productSKURepository.GetProductSKU(productSKUId);
+            return await _unitOfWork.ProductSKUs.GetProductSKU(productSKUId);
         }
+
+        //public async Task<List<ProductSKUListDto>> GetProductSKUs()
+        //{
+        //    var products = await _unitOfWork.Products.GetProducts();
+
+        //}
     }
 }

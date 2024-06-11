@@ -10,39 +10,29 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.ViewModel;
 using AutoMapper;
+using Data;
 
 namespace Service
 {
     public class OrderService : IOrderService
     {
-        private readonly IOrderRepository _orderRepository;
-        private readonly IProductSKURepository _productSKURepository;
-        private readonly ICartRepository _cartRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IAccountRepository _accountRepository;
 
-        public OrderService(IOrderRepository orderRepository, 
-            IProductSKURepository productSKURepository,
-            ICartRepository cartRepository,
-            IMapper mapper,
-            IAccountRepository accountRepository
-            )
+        public OrderService(IUnitOfWork unitOfWork,IMapper mapper)
         {
-            _orderRepository = orderRepository;
-            _productSKURepository = productSKURepository;
-            _cartRepository = cartRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _accountRepository = accountRepository;
         }
 
         public async Task<OrderDto> Create(string buyerId, bool isDefault, ShippingAddress? shippingAddress)
         {
-           var cart = await _cartRepository.Retrieve(buyerId);
-           var user = await _accountRepository.GetUserByName(buyerId);
+           var cart = await _unitOfWork.Carts.Retrieve(buyerId);
+           var user = await _unitOfWork.Accounts.GetUserByName(buyerId);
            var items = new List<OrderItem>();
             foreach (var item in cart.Items)
             {
-                var productItem = await _productSKURepository.GetById(item.ProductSKUId);
+                var productItem = await _unitOfWork.ProductSKUs.GetById(item.ProductSKUId);
                 var orderItem = new OrderItem
                 {
                     ProductSKU = productItem,
@@ -79,14 +69,14 @@ namespace Service
             {
                 order.ShippingAddress = shippingAddress;
             }    
-            await _orderRepository.Add(order);
-            await _cartRepository.Delete(cart);
+            await _unitOfWork.Orders.Add(order);
+            await _unitOfWork.Carts.Delete(cart);
             return _mapper.Map<OrderDto>(order);
         }
 
         public async Task<List<OrderDto>> GetByUser(string buyerId)
         {
-            return await _orderRepository.GetByUser(buyerId);
+            return await _unitOfWork.Orders.GetByUser(buyerId);
         }
     }
 }

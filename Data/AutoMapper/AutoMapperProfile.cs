@@ -17,6 +17,7 @@ namespace Data.AutoMapper
         {
             CreateMap<Product, ProductDto>()
                 .ForMember(dst => dst.Skus, opt => opt.MapFrom(src => src.Skus));
+            CreateMap<CreateProductModel, Product>();
             CreateMap<ProductSKU, ProductSKUDto>()
                 .ForMember(dst=>dst.Color,opt=>opt.MapFrom(src=>src.Color.Value))
                 .ForMember(dst => dst.Size, opt => opt.MapFrom(src => src.Size.Value))

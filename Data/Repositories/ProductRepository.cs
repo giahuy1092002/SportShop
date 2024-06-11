@@ -19,11 +19,11 @@ namespace Data.Repositories
     {
         private readonly IMapper _mapper;
 
-        public ProductRepository(SportStoreContext context,IMapper mapper) : base(context)
+        public ProductRepository(SportStoreContext context, IMapper mapper) : base(context)
         {
             _mapper = mapper;
         }
-        public async Task<ProductColorDetail> GetProductColorDetail(int productId,int colorId)
+        public async Task<ProductColorDetail> GetProductColorDetail(int productId, int colorId)
         {
             var product = await Entities
                 .Include(p => p.Skus)
@@ -31,7 +31,7 @@ namespace Data.Repositories
                 .Include(p => p.Skus)
                 .ThenInclude(p => p.Size)
                 .Include(p => p.Images)
-                .FirstOrDefaultAsync(p=>p.Id==productId);
+                .FirstOrDefaultAsync(p => p.Id == productId);
             var images = product.Images
                 .Where(i => i.ProductId == productId && i.ColorId == colorId)
                 .ToList();
@@ -76,18 +76,29 @@ namespace Data.Repositories
                     .ThenInclude(p => p.Size)
                 .Include(p => p.Images)
                 .AsQueryable();
-            var products = await query.Sort(productParams.OrderBy).ToListAsync();
-            var productDtos = products.Select(x => new ProductListDto
-            {
-                Id = x.Id,
-                Name = x.Name,
-                ImageColors = x.Skus.Select(p => new ImageColorDto
-                {
-                    ColorId = p.ColorId,
-                    PictureUrl = p.Product.Images.FirstOrDefault(i => i.ColorId == p.ColorId && i.Type == "Anh chinh").PictureUrl
-                }).Distinct(new ImageColorDtoCompare()).ToList(),
-                Price = x.Skus[0].Price,
-            }).ToList();
+            var products = await query
+                .Filter(productParams.Colors, productParams.Sizes)
+                .Sort(productParams.OrderBy).ToListAsync();
+            var productDtos = products
+           .SelectMany(p => p.Skus
+               .GroupBy(s => s.ColorId)
+               .Select(g => new ProductListDto
+               {
+                   Id = p.Id,
+                   Name = p.Name,
+                   ColorId = g.Key,
+                   PictureUrl = p.Images.FirstOrDefault(i => i.ColorId == g.Key && i.Type == "Anh chinh")?.PictureUrl,
+                   Price = g.FirstOrDefault().Price,
+                   ImageColors = p.Skus
+                       .GroupBy(s => s.ColorId)
+                       .Select(gc => new ImageColorDto
+                       {
+                           ColorId = gc.Key,
+                           PictureUrl = p.Images.FirstOrDefault(i => i.ColorId == gc.Key && i.Type == "Anh chinh")?.PictureUrl,
+                           Price = p.Skus.FirstOrDefault(sku=>sku.ColorId==gc.Key).Price,
+                       }).ToList()
+               })
+           ).ToList();
             return productDtos;
 
         }
@@ -100,6 +111,13 @@ namespace Data.Repositories
                     .ThenInclude(p => p.Size)
                 .ToListAsync();
             return products;
+        }
+        public async Task<Product> GetProduct(int productId)
+        {
+            var product = await Entities
+                .Include(p => p.Skus)
+                .FirstOrDefaultAsync(p => p.Id == productId);
+            return product;
         }
     }
 }

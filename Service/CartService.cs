@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Data;
+using Data.Entities;
 using Data.Interface;
 using Service.Interface;
 using System;
@@ -11,39 +12,41 @@ namespace Service
 {
     public class CartService : ICartService
     {
-        private readonly ICartRepository _cartRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CartService(ICartRepository cartRepository)
+        public CartService(IUnitOfWork unitOfWork)
         {
-            _cartRepository = cartRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Cart> AddCart(string buyerId)
         {
-            return await _cartRepository.AddCart(buyerId);
+            return await _unitOfWork.Carts.AddCart(buyerId);
         }
 
         public async Task<Cart> AddItem(ProductSKU productSKU, int quantity, Cart cart)
         {
-            return await _cartRepository.AddItem(productSKU, quantity, cart);
+            var result =  await _unitOfWork.Carts.AddItem(productSKU, quantity, cart);
+            return result;
         }
 
         public async Task<bool> RemoveItem(int productSKUId, int quantity, Cart cart)
         {
-            return await _cartRepository.RemoveItem(productSKUId, quantity, cart);
+            var result = await _unitOfWork.Carts.RemoveItem(productSKUId, quantity, cart);
+            return result;
         }
 
         public async Task<Cart> Retrieve(string buyerId)
         {
-            return await _cartRepository.Retrieve(buyerId);
+            return await _unitOfWork.Carts.Retrieve(buyerId);
         }
         public async Task Remove(Cart cart)
         {
-            await _cartRepository.Delete(cart);
+            await _unitOfWork.Carts.Delete(cart);
         }
         public async Task Update(Cart cart)
         {
-            await _cartRepository.Update(cart);
+            await _unitOfWork.Carts.Update(cart);
         }
     }
 }

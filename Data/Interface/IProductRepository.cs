@@ -14,5 +14,6 @@ namespace Data.Interface
         Task<List<ProductListDto>> GetProducts(ProductParams productParams);
         Task<ProductColorDetail> GetProductColorDetail(int productId,int colorId);
         Task<List<Product>> GetProducts();
+        Task<Product> GetProduct(int productId);
     }
 }

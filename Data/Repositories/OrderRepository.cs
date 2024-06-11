@@ -14,12 +14,11 @@ namespace Data.Repositories
 {
     public class OrderRepository : Repository<Order>, IOrderRepository
     {
-        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
 
-        public OrderRepository(SportStoreContext context,IUnitOfWork uow,IMapper mapper):base(context)
+        public OrderRepository(SportStoreContext context,IMapper mapper):base(context)
         {
-            _uow = uow;
+ 
             _mapper = mapper;
         }
 

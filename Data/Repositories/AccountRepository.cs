@@ -5,39 +5,31 @@ using Data.Entities;
 using Data.Interface;
 using Data.Model;
 using Data.ViewModel;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using System.Buffers.Text;
 using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
 namespace Data.Repositories
 {
     public class AccountRepository : Repository<User>,IAccountRepository
     {
-        private readonly IUnitOfWork _uow;
         private readonly UserManager<User> _userManager;
-        private readonly IConfiguration _configuration;
-
-        public AccountRepository(
-            SportStoreContext context,
-            IUnitOfWork uow,
-            UserManager<User> userManager,
-            IConfiguration configuration
-            ):base(context)
+        private readonly IUrlHelper _urlHelper;
+        public AccountRepository(SportStoreContext context,UserManager<User> userManager, IUrlHelper urlHelper) :base(context)
         {
-            _uow = uow;
             _userManager = userManager;
-            _configuration = configuration;
+            _urlHelper = urlHelper;
         }
-
         public async Task<bool> ChangePassword(ChangePasswordModel changePasswordModel,string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -94,6 +86,26 @@ namespace Data.Repositories
             };
         }
 
+        public async Task<LinkMailModel> ForgetPassword(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user!=null)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                Console.WriteLine(token);
+                var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+                var link = _urlHelper.Action("ResetPassword", new { encodedToken });
+                var result = new LinkMailModel
+                {
+                    Email = email,
+                    Link = link
+                };
+                return await Task.FromResult(result);
+
+            }
+            throw new KeyNotFoundException("Email is not exist");
+        }
+
         public async Task<User> SignIn(SignInModel request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -123,6 +135,28 @@ namespace Data.Repositories
             await _userManager.AddToRoleAsync(user, "Customer");
             return user;
         }
-        
+
+        public async Task<bool> ResetPassword(ResetPassword request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user != null)
+            {
+                var result = await _userManager.ResetPasswordAsync(user, request.Token, request.Password);
+                if (result.Succeeded)
+                {
+                    return await Task.FromResult(true);
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        throw new Exception(error.Description);
+                    }
+
+                }
+            }
+            return false;
+
+        }
     }
 }

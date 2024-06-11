@@ -15,11 +15,11 @@ namespace Service
         {
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IProductSKUService, ProductSKUService>();
-            services.AddTransient<IImageService, ImageService>();
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IOrderService, OrderService>();   
             services.AddTransient<IUserAddressService, UserAddressService>();
+            services.AddTransient<IMailService, MailService>();
             return services;
         }
     }

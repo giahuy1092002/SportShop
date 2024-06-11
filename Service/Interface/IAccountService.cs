@@ -17,5 +17,6 @@ namespace Service.Interface
         Task<User> GetCurrentUser(string email);
         Task<UserInfoDto> GetUserInfo(Guid userId);
         Task<bool> ChangePassword(ChangePasswordModel changePasswordModel, string email);
+        //Task<bool> ResetPassword(string email, string password);
     }
 }

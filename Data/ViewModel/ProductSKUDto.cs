@@ -23,4 +23,11 @@ namespace Data.ViewModel
         public int Id { get; set; }
         public string Size { get; set; }
     }
+    public class ProductSKUListDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<ImageColorDto> ImageColors { get; set; }
+        public int Price { get; set; }
+    }
 }

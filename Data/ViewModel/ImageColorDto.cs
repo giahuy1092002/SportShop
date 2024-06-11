@@ -9,6 +9,7 @@ namespace Data.ViewModel
     public class ImageColorDto
     {
         public int ColorId { get; set; }
-        public string PictureUrl { get; set; }  
+        public string PictureUrl { get; set; } 
+        public int Price { get; set; }
     }
 }

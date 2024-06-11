@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
+using Data.Interface;
 using Data.Model;
 using Data.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Newtonsoft.Json.Linq;
 using Service;
 using Service.Interface;
 using System.Security.Claims;
+using System.Text;
 
 namespace SportShop.Controllers
 {
@@ -16,16 +20,22 @@ namespace SportShop.Controllers
         private readonly IAccountService _accountService;
         private readonly ICartService _cartService;
         private readonly TokenService _tokenService;
+        private readonly IMailService _mailService;
+        private readonly IAccountRepository _accountRepository;
         private readonly IMapper _mapper;
 
         public AccountController(IAccountService accountService,
             ICartService cartService,
             TokenService tokenService,
+            IMailService mailService,
+            IAccountRepository accountRepository,
             IMapper mapper)
         {
             _accountService = accountService;
             _cartService = cartService;
             _tokenService = tokenService;
+            _mailService = mailService;
+            _accountRepository = accountRepository;
             _mapper = mapper;
         }
         [HttpPost("login")]
@@ -85,6 +95,28 @@ namespace SportShop.Controllers
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
         {
             return Ok(await _accountService.ChangePassword(model, User.Identity.Name));
+        }
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ForgetPassword(string email)
+        {
+            var mail = await _accountRepository.ForgetPassword(email);
+            var request = new MailRequest();
+            request.ToEmail = email;
+            request.Subject = "ForgetPassword";
+            request.Body = mail.Link;
+            var result = await _mailService.SendEmail(request);
+            return Ok(result);
+        }
+        [HttpPut("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPassword model)
+        {
+            var decodedBytes = WebEncoders.Base64UrlDecode(model.Token);
+            var decodedToken = Encoding.UTF8.GetString(decodedBytes);
+            model.Token = decodedToken;
+            var result = await _accountRepository.ResetPassword(model);
+            if (result) return Ok("Lấy mật khẩu thành công");
+            return Ok("Thất bại");
+         
         }
     }
 }

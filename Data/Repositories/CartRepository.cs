@@ -12,11 +12,11 @@ namespace Data.Repositories
 {
     public class CartRepository : Repository<Cart>, ICartRepository
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CartRepository(SportStoreContext context, IUnitOfWork uow) : base(context)
+        public CartRepository(SportStoreContext context,IUnitOfWork unitOfWork) : base(context)
         {
-            _uow = uow;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Cart> AddCart(string buyerId)
@@ -32,14 +32,14 @@ namespace Data.Repositories
         public async Task<Cart> AddItem(ProductSKU productSKU, int quantity, Cart cart)
         {
             cart.AddItem(productSKU, quantity);
-            await _uow.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return await Retrieve(cart.BuyerId);
         }
 
         public async Task<bool> RemoveItem(int productSKUId, int quantity, Cart cart)
         {
             cart.RemoveItem(productSKUId, quantity);
-            await _uow.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
 

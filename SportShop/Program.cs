@@ -5,19 +5,26 @@ using Data.Entities;
 using Data.Seeding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Service;
 using Service.Interface;
 using System.Text;
+using Data.Interface;
+using Data.Repositories;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services
         .AddRepository()
         .AddService()
-        ;
+        .AddHttpContextAccessor();
+    ;
 
 }
 
@@ -77,9 +84,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddCors();
-builder.Services.AddScoped<TokenService>();  
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
+                                opt.TokenLifespan = TimeSpan.FromMinutes(5));
+
+builder.Services.AddMvc();
+
+builder.Services.AddScoped(x =>
+{
+    var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+    var factory = x.GetRequiredService<IUrlHelperFactory>();
+    return factory.GetUrlHelper(actionContext);
+});
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
 var app = builder.Build();
-app.UseMiddleware<ErrorHandleMiddleware>();
+//app.UseMiddleware<ErrorHandleMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

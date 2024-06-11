@@ -1,4 +1,5 @@
 ﻿using Data.Interface;
+using Data.Model;
 using Data.RequestHelper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,16 @@ namespace SportShop.Controllers
             var sizes = products.SelectMany(p => p.Skus).Select(p => p.Size.Value).Distinct().ToList();
             var colors = products.SelectMany(p => p.Skus).Select(p => p.Color.Value).Distinct().ToList();
             return Ok(new { sizes, colors });
+        }
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Create([FromForm] CreateProductModel createProduct)
+        {
+            return Ok(await _productService.Create(createProduct));
+        }
+        [HttpPost("[action]")]
+        public async Task<IActionResult> AddColor([FromForm] AddProductColorModel createProduct,int productId)
+        {
+            return Ok(await _productService.AddColor(createProduct, productId));
         }
     }
 }
