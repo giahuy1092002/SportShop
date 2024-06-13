@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.Extension;
 using Data.Interface;
 using Data.Model;
 using Data.RequestHelper;
@@ -28,6 +29,8 @@ namespace SportShop.Controllers
             var subCategory = await _unitOfWork.SubCategory.GetSubCategory(subCategoryId);
             var name = subCategory.Name;
             var gender = subCategory.Category.Gender.Name;
+            products.MetaData.TotalCount = products.Count();
+            Response.AddPaginationHeader(products.MetaData);
             return Ok(new { gender,name,products});
         }
         [HttpGet("[action]")]
@@ -57,6 +60,11 @@ namespace SportShop.Controllers
         public async Task<IActionResult> GetByName(string name)
         {
             return Ok(await _unitOfWork.Products.GetByName(name));
+        }
+        [HttpDelete("[action]")]
+        public async Task<IActionResult> Delete(int productId)
+        {
+            return Ok(await _unitOfWork.Products.DeleteProduct(productId));
         }
     }
 }

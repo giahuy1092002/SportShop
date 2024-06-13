@@ -50,6 +50,9 @@ namespace Data.DataContext
             modelBuilder.Entity<Product>()
             .HasIndex(p => p.Name)
             .HasDatabaseName("IX_Product_Name");
+            modelBuilder.Entity<Product>()
+           .HasIndex(p => p.SubCategoryId)
+           .HasDatabaseName("IX_Product_SubCategoryId");
 
         }
     }

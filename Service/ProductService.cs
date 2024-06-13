@@ -105,7 +105,7 @@ namespace Service
             return await _unitOfWork.Products.GetProductColorDetail(productId,colorId);
         }
 
-        public async Task<List<ProductListDto>> GetProducts(ProductParams productParams, int subCategoryId)
+        public async Task<PagedList<ProductListDto>> GetProducts(ProductParams productParams, int subCategoryId)
         {
             var products = await _unitOfWork.Products.GetProducts(productParams,subCategoryId);
             return products;

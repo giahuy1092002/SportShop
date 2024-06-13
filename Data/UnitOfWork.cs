@@ -35,7 +35,7 @@ namespace Data
             _dbContext = dbContext;
             _urlHelper = urlHelper;
             _userManager = userManager;
-            _productRepository = new ProductRepository(_dbContext, mapper);
+            _productRepository = new ProductRepository(_dbContext, mapper,this);
             _accountRepository = new AccountRepository(_dbContext, _userManager, _urlHelper);
             _orderRepository = new OrderRepository(_dbContext, mapper);
             _productSKURepository = new ProductSKURepository(_dbContext);

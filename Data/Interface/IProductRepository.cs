@@ -12,10 +12,11 @@ namespace Data.Interface
 {
     public interface IProductRepository : IRepository<Product>
     {
-        Task<List<ProductListDto>> GetProducts(ProductParams productParams,int subCategoryId);
+        Task<PagedList<ProductListDto>> GetProducts(ProductParams productParams,int subCategoryId);
         Task<ProductColorDetail> GetProductColorDetail(int productId,int colorId);
         Task<List<Product>> GetAll(ProductParams productParams, int subcategoryId);
         Task<Product> GetProduct(int productId);
         Task<List<ProductSearchDto>> GetByName(string name);
+        Task<bool> DeleteProduct(int productId);
     }
 }
