@@ -10,6 +10,7 @@ namespace Data.Entities.OrderAggregate
     {
         Pending,
         PaymentReceived,
-        PaymentFailed
+        PaymentFailed,
+        Complete
     }
 }

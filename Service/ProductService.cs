@@ -105,15 +105,15 @@ namespace Service
             return await _unitOfWork.Products.GetProductColorDetail(productId,colorId);
         }
 
-        public async Task<List<ProductListDto>> GetProducts(ProductParams productParams)
+        public async Task<List<ProductListDto>> GetProducts(ProductParams productParams, int subCategoryId)
         {
-            var products = await _unitOfWork.Products.GetProducts(productParams);
+            var products = await _unitOfWork.Products.GetProducts(productParams,subCategoryId);
             return products;
         }
 
-        public async Task<List<Product>> GetProducts()
+        public async Task<List<Product>> GetAll(ProductParams productParams, int subCategoryId)
         {
-            return await _unitOfWork.Products.GetProducts();
+            return await _unitOfWork.Products.GetAll(productParams,subCategoryId);
         }
     }
 }

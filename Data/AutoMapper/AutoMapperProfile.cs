@@ -54,6 +54,9 @@ namespace Data.AutoMapper
             CreateMap<Cart, CartDto>();
             CreateMap<CreateAddressModel, UserAddress>();
             CreateMap<UserAddress,UserAddressDto>();
+
+            CreateMap<SubCategory, SubCategoryDto>();
+            CreateMap<Category,CategoryDto>();
         }
     }
 }

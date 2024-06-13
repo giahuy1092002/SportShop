@@ -41,5 +41,10 @@ namespace SportShop.Controllers
         {
             return Ok(await _userAddressService.ChangeDefault(addressId, userId));
         }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetDefault(Guid userId)
+        {
+            return Ok(await _userAddressService.GetDefault(userId));
+        }
     }
 }

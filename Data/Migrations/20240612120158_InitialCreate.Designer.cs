@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(SportStoreContext))]
-    [Migration("20240530031531_AddOrder")]
-    partial class AddOrder
+    [Migration("20240612120158_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,27 +24,6 @@ namespace Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Data.Entities.Brand", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Brand");
-                });
 
             modelBuilder.Entity("Data.Entities.Cart", b =>
                 {
@@ -97,12 +76,12 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BrandId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GenderId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -110,7 +89,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrandId");
+                    b.HasIndex("GenderId");
 
                     b.ToTable("Category");
                 });
@@ -134,6 +113,27 @@ namespace Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Color");
+                });
+
+            modelBuilder.Entity("Data.Entities.Gender", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Gender");
                 });
 
             modelBuilder.Entity("Data.Entities.Image", b =>
@@ -160,8 +160,6 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ColorId");
-
                     b.HasIndex("ProductId");
 
                     b.ToTable("Image");
@@ -174,9 +172,6 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AddressId")
-                        .HasColumnType("int");
 
                     b.Property<string>("BuyerId")
                         .IsRequired()
@@ -194,12 +189,7 @@ namespace Data.Migrations
                     b.Property<int>("SubTotal")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserAddressId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserAddressId");
 
                     b.ToTable("Order");
                 });
@@ -212,7 +202,7 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderID")
                         .HasColumnType("int");
 
                     b.Property<int>("Price")
@@ -226,7 +216,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderID");
 
                     b.HasIndex("ProductSKUId");
 
@@ -339,13 +329,13 @@ namespace Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("25c64fab-20da-4bd9-a799-b5f55c5cba4d"),
+                            Id = new Guid("98788342-e0f1-4cb1-8a1d-8dd85fd9afd1"),
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = new Guid("48962935-f2f3-48e8-adf0-6f1c18eea02b"),
+                            Id = new Guid("4c803cd7-875c-4031-b476-b64271e7164e"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -403,6 +393,9 @@ namespace Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -413,6 +406,18 @@ namespace Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -633,40 +638,28 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Category", b =>
                 {
-                    b.HasOne("Data.Entities.Brand", "Brand")
+                    b.HasOne("Data.Entities.Gender", "Gender")
                         .WithMany()
-                        .HasForeignKey("BrandId")
+                        .HasForeignKey("GenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Brand");
+                    b.Navigation("Gender");
                 });
 
             modelBuilder.Entity("Data.Entities.Image", b =>
                 {
-                    b.HasOne("Data.Entities.Color", "Color")
-                        .WithMany()
-                        .HasForeignKey("ColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Data.Entities.Product", "Product")
                         .WithMany("Images")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Color");
-
                     b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Data.Entities.OrderAggregate.Order", b =>
                 {
-                    b.HasOne("Data.Entities.UserAddress", "UserAddress")
-                        .WithMany()
-                        .HasForeignKey("UserAddressId");
-
                     b.OwnsOne("Data.Entities.OrderAggregate.ShippingAddress", "ShippingAddress", b1 =>
                         {
                             b1.Property<int>("OrderId")
@@ -708,22 +701,25 @@ namespace Data.Migrations
                                 .HasForeignKey("OrderId");
                         });
 
-                    b.Navigation("ShippingAddress");
-
-                    b.Navigation("UserAddress");
+                    b.Navigation("ShippingAddress")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Data.Entities.OrderAggregate.OrderItem", b =>
                 {
-                    b.HasOne("Data.Entities.OrderAggregate.Order", null)
+                    b.HasOne("Data.Entities.OrderAggregate.Order", "Order")
                         .WithMany("OrderItems")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Data.Entities.ProductSKU", "ProductSKU")
                         .WithMany()
                         .HasForeignKey("ProductSKUId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
 
                     b.Navigation("ProductSKU");
                 });

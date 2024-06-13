@@ -17,4 +17,12 @@ namespace Data.ViewModel
         public int Price { get; set; }
 
     }
+    public class ProductSearchDto
+    {
+        public int Id { get; set; }
+        public string Name { set; get; }
+        public string PictureUrl { set; get; }
+        public int ColorId { get; set; }
+        public int Price { set; get; }
+    }
 }

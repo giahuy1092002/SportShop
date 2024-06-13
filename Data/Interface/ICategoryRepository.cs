@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 
 namespace Data.Interface
 {
-    public interface IUserAddressRepository : IRepository<UserAddress>
+    public interface ICategoryRepository : IRepository<Category>
     {
-        Task<List<UserAddressDto>> GetByUser(Guid userId);
-        Task<UserAddress> GetDefault(Guid userId);
-
+        Task<List<CategoryDto>> GetByGender(int genderId);
     }
 }

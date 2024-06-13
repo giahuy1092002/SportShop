@@ -15,5 +15,6 @@ namespace Service.Interface
         Task Delete(int addressId);
         Task<bool> ChangeDefault(int addressId, Guid userId);
         Task<List<UserAddressDto>> GetByUser(Guid userId);
+        Task<UserAddressDto> GetDefault(Guid userId);
     }
 }

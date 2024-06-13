@@ -32,6 +32,10 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -50,20 +54,6 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Brand",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Brand", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,6 +81,44 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Color", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Gender",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Gender", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Order",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BuyerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OrderStatus = table.Column<int>(type: "int", nullable: false),
+                    DeliveryFee = table.Column<int>(type: "int", nullable: false),
+                    SubTotal = table.Column<int>(type: "int", nullable: false),
+                    ShippingAddress_FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingAddress_LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingAddress_AddressLine = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingAddress_City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingAddress_District = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingAddress_Commune = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingAddress_PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -213,6 +241,33 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserAddress",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDefault = table.Column<bool>(type: "bit", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddressLine = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    District = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Commune = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAddress", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAddress_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Category",
                 columns: table => new
                 {
@@ -220,15 +275,15 @@ namespace Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BrandId = table.Column<int>(type: "int", nullable: false)
+                    GenderId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Category_Brand_BrandId",
-                        column: x => x.BrandId,
-                        principalTable: "Brand",
+                        name: "FK_Category_Gender_GenderId",
+                        column: x => x.GenderId,
+                        principalTable: "Gender",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -292,12 +347,6 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Image", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Image_Color_ColorId",
-                        column: x => x.ColorId,
-                        principalTable: "Color",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Image_Product_ProductId",
                         column: x => x.ProductId,
@@ -369,13 +418,41 @@ namespace Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "OrderItem",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductSKUId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    OrderID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderItem_Order_OrderID",
+                        column: x => x.OrderID,
+                        principalTable: "Order",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderItem_ProductSKU_ProductSKUId",
+                        column: x => x.ProductSKUId,
+                        principalTable: "ProductSKU",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("695a3139-8249-46ec-bfc7-7bbb374fdb80"), null, "Admin", "ADMIN" },
-                    { new Guid("9b059d2a-e5d8-4fa9-8600-337b7c1f8fdb"), null, "Customer", "CUSTOMER" }
+                    { new Guid("4c803cd7-875c-4031-b476-b64271e7164e"), null, "Admin", "ADMIN" },
+                    { new Guid("98788342-e0f1-4cb1-8a1d-8dd85fd9afd1"), null, "Customer", "CUSTOMER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -428,19 +505,24 @@ namespace Data.Migrations
                 column: "ProductSKUId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Category_BrandId",
+                name: "IX_Category_GenderId",
                 table: "Category",
-                column: "BrandId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Image_ColorId",
-                table: "Image",
-                column: "ColorId");
+                column: "GenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Image_ProductId",
                 table: "Image",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItem_OrderID",
+                table: "OrderItem",
+                column: "OrderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItem_ProductSKUId",
+                table: "OrderItem",
+                column: "ProductSKUId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_SubCategoryId",
@@ -466,6 +548,11 @@ namespace Data.Migrations
                 name: "IX_SubCategory_CategoryId",
                 table: "SubCategory",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAddress_UserId",
+                table: "UserAddress",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -493,16 +580,25 @@ namespace Data.Migrations
                 name: "Image");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "OrderItem");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "UserAddress");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Cart");
 
             migrationBuilder.DropTable(
+                name: "Order");
+
+            migrationBuilder.DropTable(
                 name: "ProductSKU");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Color");
@@ -520,7 +616,7 @@ namespace Data.Migrations
                 name: "Category");
 
             migrationBuilder.DropTable(
-                name: "Brand");
+                name: "Gender");
         }
     }
 }

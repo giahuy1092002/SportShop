@@ -13,22 +13,22 @@ namespace SportShop.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IVnPayService _vnPayService;
+        private readonly IOrderService _orderService;
 
-        public PaymentController(IVnPayService vnPayService)
+        public PaymentController(IVnPayService vnPayService,IOrderService orderService)
         {
             _vnPayService = vnPayService;
-        }
-        [HttpPost("[action]")]
-        public IActionResult CreatePaymentUrl(PaymentInformationModel model)
-        {
-            var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
-
-            return Ok(url);
+            _orderService = orderService;
         }
         [HttpGet("[action]")]
-        public IActionResult PaymentCallback()
+        public async Task<IActionResult> PaymentCallback()
         {
             var response = _vnPayService.PaymentExecute(Request.Query);
+            string orderId = Request.Query["vnp_TxnRef"];
+            var order = await _orderService.GetOrder(int.Parse(orderId));
+            order.OrderStatus = OrderStatus.PaymentReceived;
+            order.SubTotal = 0;
+            await _orderService.Update(order);
             return Redirect($"http://localhost:3000/callback?status={response.Success}");
         }
     }

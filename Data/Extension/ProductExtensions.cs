@@ -42,12 +42,10 @@ namespace Data.Extensions
             {
                 query = query.Where(p => p.Skus.Any(sku => colorList.Contains(sku.Color.Value) && sizeList.Contains(sku.Size.Value)));
             }
-            // If only colorList has values, filter by color
             else if (colorList.Any())
             {
                 query = query.Where(p => p.Skus.Any(sku => colorList.Contains(sku.Color.Value)));
             }
-            // If only sizeList has values, filter by size
             else if (sizeList.Any())
             {
                 query = query.Where(p => p.Skus.Any(sku => sizeList.Contains(sku.Size.Value)));
@@ -55,5 +53,9 @@ namespace Data.Extensions
 
             return query;
         }
+        //public static bool Compare(Product product,List<string> sizes,List<string> colors)
+        //{
+            
+        //}
     }
 }

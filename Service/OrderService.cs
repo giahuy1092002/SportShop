@@ -74,9 +74,19 @@ namespace Service
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<List<OrderDto>> GetByUser(string buyerId)
+        public async Task<List<OrderDto>> GetByUser(string buyerId,string? status)
         {
-            return await _unitOfWork.Orders.GetByUser(buyerId);
+            return await _unitOfWork.Orders.GetByUser(buyerId,status);
+        }
+
+        public async Task<Order> GetOrder(int orderId)
+        {
+            return await _unitOfWork.Orders.GetOrder(orderId);
+        }
+
+        public async Task Update(Order order)
+        {
+            await _unitOfWork.Orders.Update(order);
         }
     }
 }

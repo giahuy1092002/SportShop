@@ -8,6 +8,7 @@ namespace Data.Model
 {
     public class PaymentInformationModel
     {
+        public int OrderId { get; set; }
         public string OrderType { get; set; }
         public double Amount { get; set; }
         public string OrderDescription { get; set; }

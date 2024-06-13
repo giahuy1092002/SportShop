@@ -66,6 +66,12 @@ namespace Service
             return await _unitOfWork.UserAddress.GetByUser(userId);
         }
 
+        public async Task<UserAddressDto> GetDefault(Guid userId)
+        {
+            var address = await _unitOfWork.UserAddress.GetDefault(userId);
+            return _mapper.Map<UserAddressDto>(address);
+        }
+
         public async Task Update(Address address, int addressId)
         {
             var userAddress = await _unitOfWork.UserAddress.GetById(addressId);

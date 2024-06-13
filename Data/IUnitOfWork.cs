@@ -18,6 +18,8 @@ namespace Data
         IUserAddressRepository UserAddress { get; }
         ICartRepository Carts { get; }
         IImageRepository Images { get; }
+        ISubCategoryRepository SubCategory { get; }
+        ICategoryRepository Category { get; }
         void CommitTransaction();
         void RollbackTransaction();
         int SaveChanges();

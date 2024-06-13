@@ -25,6 +25,8 @@ namespace Data
         private readonly ICartRepository _cartRepository;
         private readonly IUserAddressRepository _userAddressRepository;
         private readonly IImageRepository _imageRepository;
+        private readonly ISubCategoryRepository _subCategoryRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private IDbContextTransaction? _transaction = null;
         private readonly UserManager<User> _userManager;
         private readonly IUrlHelper _urlHelper;
@@ -40,6 +42,8 @@ namespace Data
             _cartRepository = new CartRepository(_dbContext,this);
             _userAddressRepository = new UserAddressRepository(_dbContext, mapper);
             _imageRepository = new ImageRepository(_dbContext);
+            _subCategoryRepository = new SubCategoryRepository(_dbContext,mapper);
+            _categoryRepository = new CategoryRepository(_dbContext, mapper);
         }
         public IProductRepository Products => _productRepository;
         public IAccountRepository Accounts => _accountRepository;
@@ -48,6 +52,8 @@ namespace Data
         public IUserAddressRepository UserAddress => _userAddressRepository;
         public ICartRepository Carts => _cartRepository;
         public IImageRepository Images => _imageRepository;
+        public ISubCategoryRepository SubCategory => _subCategoryRepository;
+        public ICategoryRepository Category => _categoryRepository;
         public int SaveChanges()
         {
             return _dbContext.SaveChanges();

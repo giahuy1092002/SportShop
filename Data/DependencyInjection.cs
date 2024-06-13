@@ -19,6 +19,8 @@ namespace Data
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IUserAddressRepository, UserAddressRepository>();
+            services.AddTransient<ISubCategoryRepository,SubCategoryRepository>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
             return services;
         }
     }

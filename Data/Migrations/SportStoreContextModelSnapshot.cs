@@ -22,27 +22,6 @@ namespace Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Data.Entities.Brand", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Brand");
-                });
-
             modelBuilder.Entity("Data.Entities.Cart", b =>
                 {
                     b.Property<int>("Id")
@@ -94,12 +73,12 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BrandId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GenderId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -107,7 +86,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrandId");
+                    b.HasIndex("GenderId");
 
                     b.ToTable("Category");
                 });
@@ -133,6 +112,27 @@ namespace Data.Migrations
                     b.ToTable("Color");
                 });
 
+            modelBuilder.Entity("Data.Entities.Gender", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Gender");
+                });
+
             modelBuilder.Entity("Data.Entities.Image", b =>
                 {
                     b.Property<int>("Id")
@@ -156,8 +156,6 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ColorId");
 
                     b.HasIndex("ProductId");
 
@@ -240,7 +238,7 @@ namespace Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Outstanding")
                         .IsRequired()
@@ -254,6 +252,9 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Product_Name");
 
                     b.HasIndex("SubCategoryId");
 
@@ -328,13 +329,13 @@ namespace Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a194202f-0fb4-4a2e-ab01-cf95d2febd85"),
+                            Id = new Guid("9fcddc14-5ab3-424c-bb81-a1929a64afa6"),
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = new Guid("0d600953-26a3-4adb-972a-4dc926be9be4"),
+                            Id = new Guid("f4ac3254-a754-444f-9b85-d0285dd928c8"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -637,30 +638,22 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Category", b =>
                 {
-                    b.HasOne("Data.Entities.Brand", "Brand")
+                    b.HasOne("Data.Entities.Gender", "Gender")
                         .WithMany()
-                        .HasForeignKey("BrandId")
+                        .HasForeignKey("GenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Brand");
+                    b.Navigation("Gender");
                 });
 
             modelBuilder.Entity("Data.Entities.Image", b =>
                 {
-                    b.HasOne("Data.Entities.Color", "Color")
-                        .WithMany()
-                        .HasForeignKey("ColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Data.Entities.Product", "Product")
                         .WithMany("Images")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Color");
 
                     b.Navigation("Product");
                 });
@@ -772,7 +765,7 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.SubCategory", b =>
                 {
                     b.HasOne("Data.Entities.Category", "Category")
-                        .WithMany()
+                        .WithMany("SubCategories")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -845,6 +838,11 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Cart", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Data.Entities.Category", b =>
+                {
+                    b.Navigation("SubCategories");
                 });
 
             modelBuilder.Entity("Data.Entities.OrderAggregate.Order", b =>

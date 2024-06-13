@@ -11,6 +11,8 @@ namespace Service.Interface
     public interface IOrderService
     {
         Task<OrderDto> Create(string buyerId,bool isDefault, ShippingAddress shippingAddress);
-        Task<List<OrderDto>> GetByUser(string buyerId);
+        Task<List<OrderDto>> GetByUser(string buyerId,string? status);
+        Task<Order> GetOrder(int orderId);
+        Task Update(Order order);
     }
 }

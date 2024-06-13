@@ -18,7 +18,7 @@ namespace Data.DataContext
         {
             
         }
-        public DbSet<Brand> Brand { get; set; }
+        public DbSet<Gender> Gender { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<SubCategory> SubCategory { get; set; }
         public DbSet<Product> Product { get; set; }
@@ -47,6 +47,9 @@ namespace Data.DataContext
                 );
             modelBuilder.Entity<Order>()
             .OwnsOne(o => o.ShippingAddress);
+            modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Name)
+            .HasDatabaseName("IX_Product_Name");
 
         }
     }
